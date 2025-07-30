@@ -3,25 +3,25 @@ import Head from 'next/head';
 
 // Zone boundaries
 const zoneBounds = {
-  "Mark's Office": {"x_min": 300, "x_max": 550, "y_min": -1070, "y_max": -770},
-  "Sy's Office": {"x_min": 550, "x_max": 775, "y_min": -1070, "y_max": -775},
-  "Dietrik's Office": {"x_min": 775, "x_max": 1000, "y_min": -1070, "y_max": -775},
-  "SM Conf Room": {"x_min": 1000, "x_max": 1220, "y_min": -1070, "y_max": -775},
-  "Customer Service": {"x_min": 1220, "x_max": 1600, "y_min": -1070, "y_max": -775},
-  "Entrance": {"x_min": 465, "x_max": 610, "y_min": -650, "y_max": -405},
-  "Supply1": {"x_min": 610, "x_max": 775, "y_min": -490, "y_max": -405},
-  "Reception": {"x_min": 610, "x_max": 775, "y_min": -650, "y_max": -490},
-  "Mark's Hallway": {"x_min": 465, "x_max": 555, "y_min": -770, "y_max": -650},
-  "Sy's Hallway": {"x_min": 555, "x_max": 790, "y_min": -770, "y_max": -650},
-  "Supply2": {"x_min": 775, "x_max": 1000, "y_min": -490, "y_max": -405},
-  "Supply3": {"x_min": 775, "x_max": 1000, "y_min": -650, "y_max": -490},
-  "Dietrik's Hallway": {"x_min": 790, "x_max": 1000, "y_min": -770, "y_max": -650},
-  "Test": {"x_min": 995, "x_max": 1350, "y_min": -650, "y_max": -405},
-  "Conf Hallway": {"x_min": 1000, "x_max": 1225, "y_min": -770, "y_max": -650},
-  "Dev": {"x_min": 1350, "x_max": 1650, "y_min": -650, "y_max": -405},
-  "Customer Service Hallway": {"x_min": 1225, "x_max": 1655, "y_min": -770, "y_max": -650},
-  "99": {"x_min": 300, "x_max": 450, "y_min": -770, "y_max": -405}
-};
+    "Mark's Office": {"x_min": 300, "x_max": 550, "y_min": -1070, "y_max": -770},
+    "Sy's Office": {"x_min": 550, "x_max": 775, "y_min": -1070, "y_max": -775},
+    "Dietrik's Office": {"x_min": 775, "x_max": 1000, "y_min": -1070, "y_max": -775},
+    "SM Conf Room": {"x_min": 1000, "x_max": 1220, "y_min": -1070, "y_max": -775},
+    "Customer Service": {"x_min": 1220, "x_max": 1600, "y_min": -1070, "y_max": -775},
+    "Entrance": {"x_min": 465, "x_max": 610, "y_min": -650, "y_max": -405},
+    "Supply1": {"x_min": 610, "x_max": 775, "y_min": -490, "y_max": -405},
+    "Reception": {"x_min": 610, "x_max": 775, "y_min": -650, "y_max": -490},
+    "Mark's Hallway": {"x_min": 465, "x_max": 555, "y_min": -770, "y_max": -650},
+    "Sy's Hallway": {"x_min": 555, "x_max": 790, "y_min": -770, "y_max": -650},
+    "Supply2": {"x_min": 775, "x_max": 1000, "y_min": -490, "y_max": -405},
+    "Supply3": {"x_min": 775, "x_max": 1000, "y_min": -650, "y_max": -490},
+    "Dietrik's Hallway": {"x_min": 790, "x_max": 1000, "y_min": -770, "y_max": -650},
+    "Test": {"x_min": 995, "x_max": 1350, "y_min": -650, "y_max": -405},
+    "Conf Hallway": {"x_min": 1000, "x_max": 1225, "y_min": -770, "y_max": -650},
+    "Dev": {"x_min": 1350, "x_max": 1650, "y_min": -650, "y_max": -405},
+    "Customer Service Hallway": {"x_min": 1225, "x_max": 1655, "y_min": -770, "y_max": -650},
+    "99": {"x_min": 300, "x_max": 450, "y_min": -770, "y_max": -405}
+  };
 
 export default function Home() {
   // Multi-MAC state management
@@ -242,6 +242,37 @@ export default function Home() {
     }
   };
 
+  // Save to server
+  const handleSaveToServer = async () => {
+    const currentDevice = getCurrentDevice();
+    if (!currentDevice.session) return;
+    
+    try {
+      const response = await fetch('/api/save-to-server', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          session_id: currentDevice.session.session_id
+        })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Unknown error');
+      }
+
+      const data = await response.json();
+      alert(`File saved to server successfully!\nFilename: ${data.filename}\nSize: ${data.file_size} bytes`);
+      
+      // Reset after saving
+      resetSession();
+    } catch (error) {
+      alert('Failed to save to server: ' + error.message);
+    }
+  };
+
   // Download data
   const handleDownload = () => {
     const currentDevice = getCurrentDevice();
@@ -426,7 +457,14 @@ export default function Home() {
               onClick={handleDownload}
               disabled={!currentDevice?.session || currentDevice?.recordingStatus !== 'Stopped'}
             >
-              Download Data
+              Download to Device
+            </button>
+            <button
+              className="btn btn-save-server"
+              onClick={handleSaveToServer}
+              disabled={!currentDevice?.session || currentDevice?.recordingStatus !== 'Stopped'}
+            >
+              Save to Server
             </button>
           </div>
         </div>
@@ -455,3 +493,6 @@ export default function Home() {
     </>
   );
 }
+
+
+

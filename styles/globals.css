@@ -96,6 +96,16 @@
     transform: translateY(-2px);
   }
   
+  .btn-save-server {
+    background: #17a2b8;
+    color: white;
+  }
+  
+  .btn-save-server:hover:not(:disabled) {
+    background: #138496;
+    transform: translateY(-2px);
+  }
+  
   .map-container {
     background: white;
     border-radius: 15px;
