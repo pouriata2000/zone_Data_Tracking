@@ -1,6 +1,16 @@
 import { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 
+const availableMacAddresses = [
+    "C4:CB:6B:15:01:8E",
+    "C4:CB:6B:15:04:D2",
+    "C4:CB:6B:15:18:8C",
+    "C4:CB:6B:15:18:EF",
+    "C4:CB:6B:15:15:A2",
+    "C4:CB:6B:15:15:C3",
+    "C4:CB:6B:15:16:A8"
+  ];
+
 // Zone boundaries not flipped
 // const zoneBounds = {
 //     "Mark's Office": {"x_min": 300, "x_max": 550, "y_min": -1070, "y_max": -770},
@@ -431,18 +441,24 @@ export default function Home() {
         </div>
 
         <div className="controls">
-          <div className="input-group">
+        <div className="input-group">
             <label htmlFor="macAddress">MAC Address:</label>
-            <input
-              type="text"
-              id="macAddress"
-              value={currentDevice?.macAddress || ''}
-              onChange={(e) => handleMacChange(e.target.value)}
-              placeholder="e.g., 00:1B:44:11:3A:B7"
-              className={currentDevice?.error ? 'invalid' : ''}
-            />
+            <select
+                id="macAddress"
+                value={currentDevice?.macAddress || ''}
+                onChange={(e) => handleMacChange(e.target.value)}
+                className={currentDevice?.error ? 'invalid' : ''}
+            >
+                <option value="">-- Select a MAC Address --</option>
+                {availableMacAddresses.map((mac) => (
+                <option key={mac} value={mac}>
+                    {mac}
+                </option>
+                ))}
+            </select>
             <span className="validation-message">{currentDevice?.error || ''}</span>
-          </div>
+            </div>
+
           
           <div className="status-panel">
             <div className="status-item">
