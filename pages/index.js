@@ -1,26 +1,47 @@
 import { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 
-// Zone boundaries
+// Zone boundaries not flipped
+// const zoneBounds = {
+//     "Mark's Office": {"x_min": 300, "x_max": 550, "y_min": -1070, "y_max": -770},
+//     "Sy's Office": {"x_min": 550, "x_max": 775, "y_min": -1070, "y_max": -775},
+//     "Dietrik's Office": {"x_min": 775, "x_max": 1000, "y_min": -1070, "y_max": -775},
+//     "SM Conf Room": {"x_min": 1000, "x_max": 1220, "y_min": -1070, "y_max": -775},
+//     "Customer Service": {"x_min": 1220, "x_max": 1600, "y_min": -1070, "y_max": -775},
+//     "Entrance": {"x_min": 465, "x_max": 610, "y_min": -650, "y_max": -405},
+//     "Supply1": {"x_min": 610, "x_max": 775, "y_min": -490, "y_max": -405},
+//     "Reception": {"x_min": 610, "x_max": 775, "y_min": -650, "y_max": -490},
+//     "Mark's Hallway": {"x_min": 465, "x_max": 555, "y_min": -770, "y_max": -650},
+//     "Sy's Hallway": {"x_min": 555, "x_max": 790, "y_min": -770, "y_max": -650},
+//     "Supply2": {"x_min": 775, "x_max": 1000, "y_min": -490, "y_max": -405},
+//     "Supply3": {"x_min": 775, "x_max": 1000, "y_min": -650, "y_max": -490},
+//     "Dietrik's Hallway": {"x_min": 790, "x_max": 1000, "y_min": -770, "y_max": -650},
+//     "Test": {"x_min": 995, "x_max": 1350, "y_min": -650, "y_max": -405},
+//     "Conf Hallway": {"x_min": 1000, "x_max": 1225, "y_min": -770, "y_max": -650},
+//     "Dev": {"x_min": 1350, "x_max": 1650, "y_min": -650, "y_max": -405},
+//     "Customer Service Hallway": {"x_min": 1225, "x_max": 1655, "y_min": -770, "y_max": -650},
+//     "99": {"x_min": 300, "x_max": 450, "y_min": -770, "y_max": -405}
+//   };
+
 const zoneBounds = {
-    "Mark's Office": {"x_min": 300, "x_max": 550, "y_min": -1070, "y_max": -770},
-    "Sy's Office": {"x_min": 550, "x_max": 775, "y_min": -1070, "y_max": -775},
-    "Dietrik's Office": {"x_min": 775, "x_max": 1000, "y_min": -1070, "y_max": -775},
-    "SM Conf Room": {"x_min": 1000, "x_max": 1220, "y_min": -1070, "y_max": -775},
-    "Customer Service": {"x_min": 1220, "x_max": 1600, "y_min": -1070, "y_max": -775},
-    "Entrance": {"x_min": 465, "x_max": 610, "y_min": -650, "y_max": -405},
-    "Supply1": {"x_min": 610, "x_max": 775, "y_min": -490, "y_max": -405},
-    "Reception": {"x_min": 610, "x_max": 775, "y_min": -650, "y_max": -490},
-    "Mark's Hallway": {"x_min": 465, "x_max": 555, "y_min": -770, "y_max": -650},
-    "Sy's Hallway": {"x_min": 555, "x_max": 790, "y_min": -770, "y_max": -650},
-    "Supply2": {"x_min": 775, "x_max": 1000, "y_min": -490, "y_max": -405},
-    "Supply3": {"x_min": 775, "x_max": 1000, "y_min": -650, "y_max": -490},
-    "Dietrik's Hallway": {"x_min": 790, "x_max": 1000, "y_min": -770, "y_max": -650},
-    "Test": {"x_min": 995, "x_max": 1350, "y_min": -650, "y_max": -405},
-    "Conf Hallway": {"x_min": 1000, "x_max": 1225, "y_min": -770, "y_max": -650},
-    "Dev": {"x_min": 1350, "x_max": 1650, "y_min": -650, "y_max": -405},
-    "Customer Service Hallway": {"x_min": 1225, "x_max": 1655, "y_min": -770, "y_max": -650},
-    "99": {"x_min": 300, "x_max": 450, "y_min": -770, "y_max": -405}
+    "99": {"x_min": 1505, "x_max": 1655, "y_min": -770, "y_max": -405},
+    "Mark's Office": {"x_min": 1405, "x_max": 1655, "y_min": -1070, "y_max": -770},
+    "Sy's Office": {"x_min": 1180, "x_max": 1405, "y_min": -1070, "y_max": -775},
+    "Dietrik's Office": {"x_min": 955, "x_max": 1180, "y_min": -1070, "y_max": -775},
+    "SM Conf Room": {"x_min": 735, "x_max": 955, "y_min": -1070, "y_max": -775},
+    "Customer Service": {"x_min": 355, "x_max": 735, "y_min": -1070, "y_max": -775},
+    "Entrance": {"x_min": 1345, "x_max": 1490, "y_min": -650, "y_max": -405},
+    "Supply1": {"x_min": 1180, "x_max": 1345, "y_min": -490, "y_max": -405},
+    "Reception": {"x_min": 1180, "x_max": 1345, "y_min": -650, "y_max": -490},
+    "Mark's Hallway": {"x_min": 1400, "x_max": 1490, "y_min": -770, "y_max": -650},
+    "Sy's Hallway": {"x_min": 1165, "x_max": 1400, "y_min": -770, "y_max": -650},
+    "Supply2": {"x_min": 955, "x_max": 1180, "y_min": -490, "y_max": -405},
+    "Supply3": {"x_min": 955, "x_max": 1180, "y_min": -650, "y_max": -490},
+    "Dietrik's Hallway": {"x_min": 955, "x_max": 1165, "y_min": -770, "y_max": -650},
+    "Test": {"x_min": 605, "x_max": 960, "y_min": -650, "y_max": -405},
+    "Conf Hallway": {"x_min": 730, "x_max": 955, "y_min": -770, "y_max": -650},
+    "Dev": {"x_min": 305, "x_max": 605, "y_min": -650, "y_max": -405},
+    "Customer Service Hallway": {"x_min": 300, "x_max": 730, "y_min": -770, "y_max": -650},
   };
 
 export default function Home() {
